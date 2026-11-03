@@ -103,27 +103,57 @@ td.w{color:var(--win);font-weight:500}
 </head>
 <body>
 <main id="app"></main>
-<script type="application/json" id="state">{"v":1,"names":["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P"],"winners":{},"updated":null}</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script id="app-script">
 const L='ABCDEFGHIJKLMNOP';
-const HASH='996fbd062d477b391ea0c94f7abd7467b808da7389e9e5a08f2a7279a2774bd3';
-const HEAD='<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>สายการแข่งขัน Real Steel</title>';
+const SB_URL='https://nfxpiwusfpkvdtsuvvaz.supabase.co';
+const SB_KEY='sb_publishable_bnKRmt8SBYS-FKKTBWcaKw_PQpvWHHy';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const clone=o=>JSON.parse(JSON.stringify(o));
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=id=>document.getElementById(id);
-const st0=JSON.parse($('state').textContent);
-const saved={names:st0.names,winners:st0.winners||{},updated:st0.updated||null};
-let S={names:saved.names.slice(),winners:clone(saved.winners)};
-let authed=false;
-try{
-  const d=JSON.parse(sessionStorage.getItem('rs-draft')||'null');
-  if(d&&Array.isArray(d.names)&&d.names.length===16)S={names:d.names,winners:d.winners||{}};
-  sessionStorage.removeItem('rs-draft');
-  if(!location.hash&&sessionStorage.getItem('rs-go')){sessionStorage.removeItem('rs-go');location.hash='#admin'}
-}catch(e){}
+/* saved = what viewers see (from the database); S = the admin's working copy */
+const saved={names:[...L],winners:{},updated:null};
+let S={names:saved.names.slice(),winners:{}};
+let isAdminUser=false,loaded=false,loadErr=false;
 const isDirty=()=>JSON.stringify([S.names,S.winners])!==JSON.stringify([saved.names,saved.winners]);
 const isAdm=()=>location.hash==='#admin';
-const loggedIn=()=>{if(authed)return true;try{return sessionStorage.getItem('rs-admin')==='1'}catch(e){return false}};
+const loggedIn=()=>isAdminUser;
+
+/* ---- database ---- */
+async function loadData(){
+  const [p,m]=await Promise.all([
+    sb.from('players').select('slot,name,updated_at').order('slot'),
+    sb.from('matches').select('match_no,winner_slot,updated_at').order('match_no')
+  ]);
+  if(p.error||m.error)throw (p.error||m.error);
+  const names=[...L],winners={};let upd=null;
+  for(const r of p.data){names[r.slot]=r.name;if(!upd||r.updated_at>upd)upd=r.updated_at}
+  for(const r of m.data){if(r.winner_slot!==null)winners[r.match_no]=r.winner_slot;if(!upd||r.updated_at>upd)upd=r.updated_at}
+  const wasDirty=loaded&&isDirty();
+  saved.names=names;saved.winners=winners;saved.updated=upd;
+  if(!wasDirty)S={names:names.slice(),winners:clone(winners)};
+  loaded=true;loadErr=false;
+}
+async function refresh(){
+  try{await loadData();loadErr=false}catch(e){loadErr=true}
+  if(!(isAdm()&&!loggedIn()))draw();
+}
+let rtTimer;
+function startLive(){
+  const kick=()=>{clearTimeout(rtTimer);rtTimer=setTimeout(refresh,300)};
+  sb.channel('bracket-live')
+    .on('postgres_changes',{event:'*',schema:'public',table:'players'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'matches'},kick)
+    .subscribe();
+  setInterval(refresh,30000); /* fallback if realtime drops */
+}
+async function checkAdmin(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){isAdminUser=false;return}
+  const {data,error}=await sb.from('admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
+  isAdminUser=!error&&!!data;
+}
 
 /* ---- bracket logic ---- */
 const KIDS={9:[1,2],10:[3,4],11:[5,6],12:[7,8],13:[9,10],14:[11,12]};
@@ -175,6 +205,8 @@ function draw(){
       h+=`<tr><td>${m}</td><td>${nm(x,s)} vs ${nm(y,s)}</td><td class="w">${w===undefined?'–':nm(w,s)}</td></tr>`}
   }
   $('table').innerHTML=h+'</table>';fit();
+  const sub=document.querySelector('#app .sub');
+  if(sub)sub.textContent=loadErr?'โหลดข้อมูลไม่สำเร็จ ลองรีเฟรชหน้านี้อีกครั้ง':!loaded?'กำลังโหลดข้อมูล…':updText();
   if(adm)dirtyMsg();
 }
 function updText(){
@@ -193,46 +225,43 @@ ${adm?'<div class="msg" id="msg"></div><div id="names"><p>พิมพ์ชื�
 ${adm?'':'<p class="foot"><a href="#admin">สำหรับผู้ดูแล</a></p>'}`;
 }
 
-/* ---- credentials ---- */
-async function sha(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
-function showLogin(){
-  $('app').innerHTML=`<div class="login"><h1>เข้าสู่ระบบผู้ดูแล</h1><p class="sub">สำหรับกรอกผลการแข่งขัน</p><label for="u">ชื่อผู้ใช้</label><input id="u" autocomplete="username"><label for="p">รหัสผ่าน</label><input id="p" type="password" autocomplete="current-password"><div class="msg err" id="lmsg"></div><button class="btn pri" id="go">เข้าสู่ระบบ</button><p class="foot"><a href="#">กลับไปหน้าผู้ชม</a></p></div>`;
+/* ---- admin login (Supabase Auth) ---- */
+function showLogin(msg){
+  $('app').innerHTML=`<div class="login"><h1>เข้าสู่ระบบผู้ดูแล</h1><p class="sub">สำหรับกรอกผลการแข่งขัน</p><label for="u">อีเมล</label><input id="u" type="email" autocomplete="username"><label for="p">รหัสผ่าน</label><input id="p" type="password" autocomplete="current-password"><div class="msg err" id="lmsg">${msg?esc(msg):''}</div><button class="btn pri" id="go">เข้าสู่ระบบ</button><p class="foot"><a href="#">กลับไปหน้าผู้ชม</a></p></div>`;
   const go=async()=>{
-    const u=$('u').value.trim().toLowerCase(),p=$('p').value,m=$('lmsg');
-    m.textContent='';
+    const u=$('u').value.trim(),p=$('p').value,m=$('lmsg'),b=$('go');
+    m.textContent='';b.disabled=true;
     try{
-      if(await sha('rs-bracket|'+u+'|'+p)===HASH){authed=true;try{sessionStorage.setItem('rs-admin','1')}catch(e){}route();return}
-      m.textContent='ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';$('p').value='';
-    }catch(e){m.textContent='เบราว์เซอร์นี้ไม่รองรับการเข้าสู่ระบบ'}
+      const {error}=await sb.auth.signInWithPassword({email:u,password:p});
+      if(error){m.textContent='อีเมลหรือรหัสผ่านไม่ถูกต้อง';$('p').value='';b.disabled=false;return}
+      await checkAdmin();
+      if(!isAdminUser){await sb.auth.signOut();m.textContent='บัญชีนี้ไม่มีสิทธิ์เป็นผู้ดูแล';b.disabled=false;return}
+      route();
+    }catch(e){m.textContent='เข้าสู่ระบบไม่สำเร็จ ลองใหม่อีกครั้ง';b.disabled=false}
   };
   $('go').onclick=go;
   for(const id of ['u','p'])$(id).addEventListener('keydown',e=>{if(e.key==='Enter')go()});
   $('u').focus();
 }
 
-/* ---- publishing: the page rebuilds its own source with new data ---- */
-function buildDoc(state){
-  const css=$('app-style').textContent,js=$('app-script').textContent;
-  const json=JSON.stringify(state).replace(/</g,'\\u003c');
-  return '<!DOCTYPE html>\n<html lang="th"><head>'+HEAD+'<style id="app-style">'+css+'</style></head><body><main id="app"></main><script type="application/json" id="state">'+json+'<\/script><script id="app-script">'+js+'<\/script></body></html>';
-}
+/* ---- publishing: write to the database; viewers update live ---- */
 async function doSave(){
   const btn=$('saveBtn');btn.disabled=true;setMsg('กำลังบันทึก…');
-  let art=null;
-  try{art=window.claude&&await window.claude.use('artifact')}catch(e){}
-  if(!art){setMsg('ในมุมมองนี้ยังบันทึกไม่ได้ ให้เปิดหน้านี้ผ่านลิงก์ของเจ้าของแล้วลองใหม่','err');btn.disabled=false;return}
-  const next={v:1,names:S.names,winners:S.winners,updated:new Date().toISOString()};
-  try{sessionStorage.setItem('rs-draft',JSON.stringify({names:S.names,winners:S.winners}));sessionStorage.setItem('rs-go','1')}catch(e){}
+  const players=S.names.map((name,slot)=>({slot,name}));
+  const matches=Array.from({length:16},(_,i)=>({match_no:i+1,winner_slot:S.winners[i+1]===undefined?null:S.winners[i+1]}));
   try{
-    await art.publish(buildDoc(next));
-    setMsg('บันทึกแล้ว','ok');
+    const a=await sb.from('players').upsert(players,{onConflict:'slot'});
+    if(a.error)throw a.error;
+    const b=await sb.from('matches').upsert(matches,{onConflict:'match_no'});
+    if(b.error)throw b.error;
+    await loadData();
+    draw();
+    setMsg('บันทึกแล้ว ผู้ชมจะเห็นผลล่าสุดทันที','ok');
   }catch(e){
-    const c=e&&e.code;
-    if(c==='conflict')return;
-    try{sessionStorage.removeItem('rs-draft');sessionStorage.removeItem('rs-go')}catch(_){}
-    setMsg(c==='not_writer'||c==='not_granted'?'บัญชีนี้ไม่มีสิทธิ์แก้ไขหน้านี้ การบันทึกทำได้เฉพาะเจ้าของหรือผู้แก้ไขของหน้า':c==='rate_limited'?'บันทึกถี่เกินไป รอสักครู่แล้วลองใหม่':'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง','err');
-    btn.disabled=false;
+    const denied=e&&(e.code==='42501'||/row-level security|permission/i.test(e.message||''));
+    setMsg(denied?'บัญชีนี้ไม่มีสิทธิ์แก้ไข กรุณาเข้าสู่ระบบใหม่':'บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง','err');
   }
+  btn.disabled=false;
 }
 
 /* ---- routing ---- */
@@ -264,8 +293,9 @@ function route(){
       timer=setTimeout(()=>{rb.classList.remove('arm');rb.textContent='ล้างผลการแข่ง'},3000);
     };
     $('saveBtn').onclick=doSave;
-    $('outBtn').onclick=()=>{
-      authed=false;try{sessionStorage.removeItem('rs-admin')}catch(e){}
+    $('outBtn').onclick=async()=>{
+      try{await sb.auth.signOut()}catch(e){}
+      isAdminUser=false;S={names:saved.names.slice(),winners:clone(saved.winners)};
       if(location.hash)location.hash='';else route();
     };
   }
@@ -291,7 +321,13 @@ function fit(){
 addEventListener('resize',fit);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
 addEventListener('hashchange',route);
-route();
+(async()=>{
+  route(); /* show the page shell right away */
+  try{await checkAdmin()}catch(e){}
+  await refresh();
+  route();
+  startLive();
+})();
 </script>
 </body>
 </html>
