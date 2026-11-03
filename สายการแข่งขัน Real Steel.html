@@ -192,10 +192,6 @@ function draw(){
   const [a,b]=part(16,s),[c,d]=part(15,s),f=s.winners[16],t=s.winners[15];
   const stage=$('bracket');stage.className='stage';
   stage.innerHTML=`<div class="tree left">${node(13,s,ro)}</div><div class="center"><div class="fw"><div class="trophy">🏆</div>${matchHTML(16,s,ro)}<div class="third">${matchHTML(15,s,ro)}</div></div></div><div class="tree right">${node(14,s,ro)}</div>`;
-  const first=f===undefined?null:f,second=f===undefined?null:(f===a?b:a);
-  const third=t===undefined?null:t,fourth=t===undefined?null:(t===c?d:c);
-  $('podium').innerHTML=[['p1','🥇 อันดับ 1',first],['p2','🥈 อันดับ 2',second],['p3','🥉 อันดับ 3',third],['p4','อันดับ 4',fourth]]
-    .map(([k,l,x])=>`<div class="pod ${k}"><span>${l}</span><b>${x==null?'–':esc(s.names[x])}</b></div>`).join('');
   $('prog').textContent='';
   const groups=[['รอบ 16 คน (8 คู่)',1,8],['รอบ 8 คน (4 คู่)',9,12],['รอบรองชนะเลิศ (2 คู่)',13,14],['ชิงอันดับ 3',15,15],['ชิงชนะเลิศ',16,16]];
   let h='<table><tr><th>ลำดับ</th><th>คู่ชก</th><th>ผู้ชนะ</th></tr>';
@@ -218,7 +214,6 @@ function skeleton(adm){
 <p class="sub"></p>
 <div class="bar">${adm?'<button class="btn pri" id="saveBtn">บันทึกและเผยแพร่</button><button class="btn" id="editBtn">แก้ไขชื่อผู้เล่น</button><button class="btn danger" id="resetBtn">ล้างผลการแข่ง</button><a class="btn" href="#">ดูหน้าผู้ชม</a><button class="btn" id="outBtn">ออกจากระบบ</button>':''}<span class="grow"></span><span class="prog" id="prog"></span></div>
 ${adm?'<div class="msg" id="msg"></div><div id="names"><p>พิมพ์ชื่อใหม่ได้เลย (ค่าเริ่มต้น A–P) ผลที่เลือกไว้จะอยู่กับผู้เล่นคนเดิม</p><div class="ng" id="ng"></div><p style="margin:10px 0 0"><button class="btn" id="nameReset">คืนค่าชื่อเป็น A–P</button></p></div>':''}
-<div class="podium" id="podium"${adm?' style="display:none"':''}></div>
 <div class="scroll" id="fit"><div id="scaler"><div class="stage" id="bracket"></div></div></div>
 
 <h2>ตารางผลการแข่งขัน</h2><div id="table"></div>
