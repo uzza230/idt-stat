@@ -227,9 +227,10 @@ ${adm?'':'<p class="foot"><a href="#admin">สำหรับผู้ดูแ�
 
 /* ---- admin login (Supabase Auth) ---- */
 function showLogin(msg){
-  $('app').innerHTML=`<div class="login"><h1>เข้าสู่ระบบผู้ดูแล</h1><p class="sub">สำหรับกรอกผลการแข่งขัน</p><label for="u">อีเมล</label><input id="u" type="email" autocomplete="username"><label for="p">รหัสผ่าน</label><input id="p" type="password" autocomplete="current-password"><div class="msg err" id="lmsg">${msg?esc(msg):''}</div><button class="btn pri" id="go">เข้าสู่ระบบ</button><p class="foot"><a href="#">กลับไปหน้าผู้ชม</a></p></div>`;
+  $('app').innerHTML=`<div class="login"><h1>เข้าสู่ระบบผู้ดูแล</h1><p class="sub">สำหรับกรอกผลการแข่งขัน</p><label for="u">ชื่อผู้ใช้</label><input id="u" type="text" autocapitalize="none" autocorrect="off" autocomplete="username"><label for="p">รหัสผ่าน</label><input id="p" type="password" autocomplete="current-password"><div class="msg err" id="lmsg">${msg?esc(msg):''}</div><button class="btn pri" id="go">เข้าสู่ระบบ</button><p class="foot"><a href="#">กลับไปหน้าผู้ชม</a></p></div>`;
   const go=async()=>{
-    const u=$('u').value.trim(),p=$('p').value,m=$('lmsg'),b=$('go');
+    let u=$('u').value.trim().toLowerCase();const p=$('p').value,m=$('lmsg'),b=$('go');
+    if(u&&!u.includes('@'))u+='@idt-stat.local';
     m.textContent='';b.disabled=true;
     try{
       const {error}=await sb.auth.signInWithPassword({email:u,password:p});
