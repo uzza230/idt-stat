@@ -13,13 +13,13 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;overflow-x:hidden;color:var(--ink);font-family:Prompt,"Noto Sans Thai","Sarabun",system-ui,sans-serif;font-synthesis:none;line-height:1.5;background:radial-gradient(ellipse 80% 40% at 50% 0,rgba(62,97,239,.45),transparent 70%),repeating-conic-gradient(from 0deg at 50% 12%,var(--rays) 0 7deg,transparent 7deg 14deg),var(--bg);background-attachment:fixed}
 main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
 h1{font-size:26px;font-weight:800;margin:0;color:#fff;text-shadow:2px 2px 0 var(--acc);letter-spacing:.2px}
-h1::before{content:"\1F94A  "}
 .sub{display:flex;align-items:center;gap:8px;color:var(--mute);margin:0 0 18px;font-size:14px;font-weight:600}
 .sub::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--dot);box-shadow:0 0 0 3px rgba(70,217,123,.25);flex:none}
 a{color:var(--sky);font-weight:600}
 :root[data-theme="light"] a{color:var(--acc)}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--nav);margin:-20px calc(50% - 50vw) 20px;padding:14px calc(50vw - 50%);border-bottom:4px solid var(--yellow);box-shadow:0 6px 0 var(--ink-d)}
-.btn.ico{padding:8px;line-height:0;border-radius:50%;flex:none;background:var(--sky);color:var(--ink-d)}
+.top{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;gap:8px;text-align:center;background:var(--nav);margin:-20px calc(50% - 50vw) 20px;padding:14px calc(50vw - 50%);border-bottom:4px solid var(--yellow);box-shadow:0 6px 0 var(--ink-d)}
+.top::before{content:""}
+.btn.ico{padding:8px;line-height:0;border-radius:50%;flex:none;justify-self:end;background:var(--sky);color:var(--ink-d)}
 .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
 .bar .grow{flex:1}
 button{font:inherit;cursor:pointer;color:inherit}
