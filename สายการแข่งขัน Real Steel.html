@@ -193,7 +193,7 @@ function draw(){
   const stage=$('bracket');stage.className='stage';
   stage.innerHTML=`<div class="tree left">${node(13,s,ro)}</div><div class="center"><div class="fw"><div class="trophy">🏆</div>${matchHTML(16,s,ro)}<div class="third">${matchHTML(15,s,ro)}</div></div></div><div class="tree right">${node(14,s,ro)}</div>`;
   $('prog').textContent='';
-  const groups=[['รอบ 16 คน (8 คู่)',1,8],['รอบ 8 คน (4 คู่)',9,12],['รอบรองชนะเลิศ (2 คู่)',13,14],['ชิงอันดับ 3',15,15],['ชิงชนะเลิศ',16,16]];
+  const groups=[['ชิงชนะเลิศ',16,16],['ชิงอันดับ 3',15,15],['รอบรองชนะเลิศ (2 คู่)',13,14],['รอบ 8 คน (4 คู่)',9,12],['รอบ 16 คน (8 คู่)',1,8]];
   let h='<table><tr><th>ลำดับ</th><th>คู่ชก</th><th>ผู้ชนะ</th></tr>';
   for(const [g,lo,hi] of groups){
     h+=`<tr class="g"><th colspan="3">${g}</th></tr>`;
