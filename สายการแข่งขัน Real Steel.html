@@ -40,33 +40,21 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(-
 .ng label{display:flex;align-items:center;gap:6px;font-size:13px}
 .ng b{width:18px;color:var(--acc);font-weight:600}
 .ng input{flex:1;min-width:0;font:inherit;font-size:14px;padding:5px 8px;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
-.podium{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
-.pod{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 14px;min-width:0}
-.pod span{display:block;font-size:13px;color:var(--mute)}
-.pod b{display:block;font-size:20px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pod.p1{background:var(--goldbg);border-color:var(--gold)}
-.pod.p1 b{color:var(--gold);font-size:24px}
 .scroll{overflow-x:auto;padding:8px 0 12px;background:var(--card);border:1.5px solid var(--line);border-radius:12px}
-#scaler{margin:0 auto}
-.stage{display:flex;align-items:center;width:max-content;padding:12px 16px;transform-origin:0 0}
-.tree{display:flex;align-items:center}
-.node{display:flex;align-items:center}
-.kids{display:flex;flex-direction:column;gap:12px;padding-right:20px}
-.kids>.node{position:relative}
-.kids>.node::after{content:"";position:absolute;right:-20px;top:50%;width:20px;border-top:2px solid var(--line)}
-.kids>.node:first-child::before{content:"";position:absolute;right:-20px;top:50%;bottom:-6px;border-right:2px solid var(--line)}
-.kids>.node:last-child::before{content:"";position:absolute;right:-20px;top:-6px;bottom:50%;border-right:2px solid var(--line)}
-.hk>.match{margin-left:20px}
-.hk>.match::before{content:"";position:absolute;left:-20px;top:50%;width:20px;border-top:2px solid var(--line)}
-.right .node{flex-direction:row-reverse}
-.right .kids{padding-right:0;padding-left:20px}
-.right .kids>.node::after{right:auto;left:-20px}
-.right .kids>.node:first-child::before,.right .kids>.node:last-child::before{right:auto;left:-20px;border-right:0;border-left:2px solid var(--line)}
-.right .hk>.match{margin-left:0;margin-right:20px}
-.right .hk>.match::before{left:auto;right:-20px}
-.left>.node>.match::after{content:"";position:absolute;right:-24px;top:50%;width:24px;border-top:2px solid var(--line)}
 .right>.node>.match::after{content:"";position:absolute;left:-24px;top:50%;width:24px;border-top:2px solid var(--line)}
-.match{position:relative;width:152px;background:var(--bg);border:1.5px solid var(--line);border-radius:8px}
+#scaler{margin:0 auto}
+.vstage{max-width:600px;margin:0 auto;padding:12px 16px 4px}
+.rd{margin-bottom:18px}
+.rd h3{margin:0 0 8px;font-size:14px;font-weight:600;text-align:center;color:var(--mute)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px}
+.col{display:flex;flex-direction:column;justify-content:space-around;gap:12px;min-width:0}
+.fin{display:flex;flex-direction:column;align-items:center;gap:14px}
+.trophy{font-size:38px;line-height:1}
+.m16{width:min(100%,250px);border-color:var(--gold);border-width:2px}
+.m16 .pl{font-size:15px}
+.third{width:min(100%,200px)}
+.m15{border-style:dashed}
+.match{position:relative;width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:8px}
 .mh{display:flex;justify-content:space-between;gap:6px;font-size:11px;color:var(--mute);padding:2px 8px;border-bottom:1px solid var(--line)}
 .pl{display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;text-align:left;background:transparent;border:0;padding:6px 8px;font-size:14px;font-weight:500;border-radius:0}
 .pl+.pl{border-top:1px solid var(--line)}
@@ -77,13 +65,6 @@ button.pl:not(:disabled):hover{background:var(--soft)}
 .pl.win i{font-style:normal;font-weight:600}
 .pl.lose{opacity:.45}
 .pl.empty{color:var(--mute);font-weight:400;font-size:12px;cursor:default}
-.center{margin:0 24px}
-.fw{position:relative}
-.trophy{position:absolute;bottom:calc(100% + 6px);left:0;right:0;text-align:center;font-size:34px;line-height:1}
-.m16{width:176px;border-color:var(--gold);border-width:2px}
-.m16 .pl{font-size:15px}
-.third{position:absolute;top:calc(100% + 36px);left:12px}
-.m15{border-style:dashed}
 h2{font-size:18px;font-weight:600;margin:24px 0 8px;text-align:center}
 table{width:100%;max-width:520px;margin:0 auto;border-collapse:collapse;background:var(--card);border:1.5px solid var(--line);border-radius:10px;overflow:hidden;font-size:14px}
 th,td{padding:5px 10px;border-bottom:1px solid var(--line);text-align:left}
@@ -98,7 +79,7 @@ td.w{color:var(--win);font-weight:500}
 .login input{width:100%;font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
 .login .msg{margin:10px 0 0}
 .login .btn{width:100%;margin-top:12px;padding:9px 14px}
-@media (max-width:700px){.podium{grid-template-columns:repeat(2,1fr)}h1{font-size:23px}}
+@media (max-width:700px){h1{font-size:23px}}
 </style>
 </head>
 <body>
@@ -189,9 +170,11 @@ function setMsg(t,k){const e=$('msg');if(e){e.textContent=t||'';e.className='msg
 function dirtyMsg(){setMsg(isDirty()?'มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก ผู้ชมจะยังไม่เห็นจนกว่าจะกดบันทึกและเผยแพร่':'','warn')}
 function draw(){
   const adm=isAdm(),s=adm?S:saved,ro=!adm;
-  const [a,b]=part(16,s),[c,d]=part(15,s),f=s.winners[16],t=s.winners[15];
-  const stage=$('bracket');stage.className='stage';
-  stage.innerHTML=`<div class="tree left">${node(13,s,ro)}</div><div class="center"><div class="fw"><div class="trophy">🏆</div>${matchHTML(16,s,ro)}<div class="third">${matchHTML(15,s,ro)}</div></div></div><div class="tree right">${node(14,s,ro)}</div>`;
+  const stage=$('bracket');stage.className='vstage';
+  const col=l=>`<div class="col">${l.map(m=>matchHTML(m,s,ro)).join('')}</div>`;
+  const rd=(t,l,r)=>`<section class="rd"><h3>${t}</h3><div class="cols">${col(l)}${col(r)}</div></section>`;
+  stage.innerHTML=rd('รอบ 16 คน',[1,2,3,4],[5,6,7,8])+rd('รอบ 8 คน',[9,10],[11,12])+rd('รอบรองชนะเลิศ',[13],[14])
+    +`<section class="rd"><h3>ชิงชนะเลิศ</h3><div class="fin"><div class="trophy">🏆</div>${matchHTML(16,s,ro)}<div class="third">${matchHTML(15,s,ro)}</div></div></section>`;
   $('prog').textContent='';
   const groups=[['ชิงชนะเลิศ',16,16],['ชิงอันดับ 3',15,15],['รอบรองชนะเลิศ (2 คู่)',13,14],['รอบ 8 คน (4 คู่)',9,12],['รอบ 16 คน (8 คู่)',1,8]];
   let h='<table><tr><th>ลำดับ</th><th>คู่ชก</th><th>ผู้ชนะ</th></tr>';
@@ -303,16 +286,7 @@ function themeIcon(){
   const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
   b.innerHTML=dark?SUN:MOON;
 }
-const MINK=0.6;
-function fit(){
-  const box=$('fit'),sc=$('scaler'),st=$('bracket');
-  if(!box||!sc||!st)return;
-  st.style.transform='none';
-  const w=st.offsetWidth,h=st.offsetHeight,avail=box.clientWidth;
-  const k=Math.max(MINK,Math.min(1,avail/w));
-  st.style.transform='scale('+k+')';
-  sc.style.width=Math.ceil(w*k)+'px';sc.style.height=Math.ceil(h*k)+'px';
-}
+function fit(){}
 addEventListener('resize',fit);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
 addEventListener('hashchange',route);
