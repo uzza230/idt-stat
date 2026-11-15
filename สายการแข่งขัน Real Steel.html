@@ -6,7 +6,7 @@
 <title>สายการแข่งขัน Real Steel</title>
 <style id="app-style">
 @font-face{font-family:"Sukhumvit Set";font-style:normal;font-weight:250;font-display:swap;src:url(fonts/SukhumvitSet-Thin.woff) format("woff")}
-:root{--bg:#0a1430;--navy:#0f2557;--navy-d:#0a1a3f;--ink:#fff;--mute:#dfe6f2;--white:#fff;--g1:#f4f6fa;--g2:#e7ebf2;--g3:#d3d9e5;--g4:#8993a8;--gold:#ffc83d;--dot:#46d97b;--veil:rgba(2,8,26,.45);--sh:0 2px 12px rgba(0,0,0,.38);color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#0a1430;--navy:#0f2557;--navy-d:#0a1a3f;--ink:#fff;--mute:#dfe6f2;--white:#e1e5ec;--g1:#d6dbe5;--g2:#c4cbd9;--g3:#aeb7c9;--g4:#6c7790;--gold:#ffc83d;--dot:#46d97b;--veil:rgba(2,8,26,.45);--sh:0 2px 12px rgba(0,0,0,.38);color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;overflow-x:hidden;color:var(--ink);font-family:"Sukhumvit Set","Noto Sans Thai","Sarabun",system-ui,sans-serif;font-synthesis:weight;line-height:1.5;background:var(--bg)}
@@ -26,7 +26,7 @@ button:disabled{cursor:default}
 .btn{display:inline-block;background:var(--white);color:var(--navy);border:1px solid var(--g3);padding:6px 14px;font-size:14px;font-weight:700;text-decoration:none;box-shadow:var(--sh)}
 .btn:hover{background:var(--g2)}
 .btn:active{transform:translateY(1px)}
-.btn.pri{background:var(--navy);color:#fff;border:2px solid #fff;font-weight:800}
+.btn.pri{background:var(--navy);color:#fff;border:2px solid var(--g1);font-weight:800}
 .btn.pri:hover{background:var(--navy-d)}
 .btn.pri:disabled{opacity:.6}
 .btn.danger.arm{background:#e5384f;border-color:#e5384f;color:#fff}
@@ -64,9 +64,9 @@ button.pl:not(:disabled):hover{background:var(--g2)}
 .pl.win{background:var(--navy);color:#fff}
 .pl.win i{font-style:normal;font-weight:800}
 .pl.lose{opacity:.5}
-.pl.empty{color:#5d6985;font-weight:500;font-size:13px;cursor:default}
+.pl.empty{color:#4a5675;font-weight:500;font-size:13px;cursor:default}
 .fglow{filter:drop-shadow(0 2px 12px rgba(0,0,0,.45));max-width:660px;margin:0 auto}
-.fbox{background:linear-gradient(90deg,var(--g3),#fff 50%,var(--g3));clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);padding:2px}
+.fbox{background:linear-gradient(90deg,var(--g3),var(--g1) 50%,var(--g3));clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);padding:2px}
 .fbox .m16{clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);background:var(--navy);color:#fff;border:0;box-shadow:none;display:grid;grid-template-columns:1fr 84px 1fr;align-items:center;padding:14px 28px;min-height:92px}
 .m16 .mh{display:none}
 .m16::before{content:"";grid-column:2;grid-row:1;height:66px;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffe9a0%22%2F%3E%3Cstop%20offset%3D%22.55%22%20stop-color%3D%22%23ffc83d%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23b8860b%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M18%208h28v14c0%209-6%2016-14%2016s-14-7-14-16z%22%20fill%3D%22url%28%23g%29%22%2F%3E%3Cpath%20d%3D%22M18%2012H8c0%209%204%2015%2011%2017M46%2012h10c0%209-4%2015-11%2017%22%20fill%3D%22none%22%20stroke%3D%22url%28%23g%29%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%2228%22%20y%3D%2238%22%20width%3D%228%22%20height%3D%2210%22%20fill%3D%22url%28%23g%29%22%2F%3E%3Cpath%20d%3D%22M20%2048h24l3%208H17z%22%20fill%3D%22url%28%23g%29%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;filter:drop-shadow(0 0 6px rgba(255,200,61,.5))}
@@ -74,7 +74,7 @@ button.pl:not(:disabled):hover{background:var(--g2)}
 .m16 .pl:nth-child(3){grid-column:3;grid-row:1}
 .m16 .pl{margin:0;width:100%;background:transparent;color:#fff;justify-content:center;text-align:center;font-size:17px;border:0}
 .m16 button.pl:not(:disabled):hover{background:rgba(255,255,255,.12)}
-.m16 .pl.win{background:#fff;color:var(--navy)}
+.m16 .pl.win{background:var(--g1);color:var(--navy)}
 .m16 .pl.lose{opacity:.4}
 .m16 .pl.empty{color:var(--g3);font-size:13px}
 .third{max-width:280px;margin:22px auto 0}
